@@ -27,15 +27,6 @@ function! pomo#pomo#progress()
     echo g:pomo__pomo__task.view_stat('Progress')
 endfunction
 
-function! g:pomo__pomo__task.done()
-    try
-        echo self.done_handler(self)
-    catch
-        echomsg 'error occurred: '.v:exception
-    endtry
-    call self.stop()
-endfunction
-
 function! pomo#pomo#set_init_handler(handler)
     let g:pomo__pomo__task.init_handler = a:handler
 endfunction
@@ -64,6 +55,15 @@ endfunction
 function! g:pomo__pomo__task.stop()
     call timer_stop(self.id)
     let self.id = 0
+endfunction
+
+function! g:pomo__pomo__task.done()
+    try
+        echo self.done_handler(self)
+    catch
+        echomsg 'error occurred: '.v:exception
+    endtry
+    call self.stop()
 endfunction
 
 function! g:pomo__pomo__task.progress(id)
