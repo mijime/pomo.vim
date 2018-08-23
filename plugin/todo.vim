@@ -5,4 +5,4 @@ command! -nargs=+ TodoRemove call pomo#todo#remove(<f-args>)
 command! TodoView call pomo#todo#view()
 
 command! TodoUseMemory call pomo#todo#mem#use()
-command! TodoUseYaml call pomo#todo#yaml#use()
+command! -nargs=1 -complete=file TodoUseFile call pomo#todo#file#use(<f-args>)

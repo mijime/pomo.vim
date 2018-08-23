@@ -6,16 +6,16 @@ let g:loaded_pomo__pomo__todo = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! pomo#pomo#todo#use()
+function! pomo#pomo#todo#use() abort
     call pomo#pomo#set_init_handler('pomo#pomo#todo#init')
     call pomo#pomo#set_done_handler('pomo#pomo#todo#done')
 endfunction
 
-function! pomo#pomo#todo#init(task)
+function! pomo#pomo#todo#init(task) abort
     call pomo#todo#add(a:task.message)
 endfunction
 
-function! pomo#pomo#todo#done(task)
+function! pomo#pomo#todo#done(task) abort
     call pomo#todo#done(a:task.message)
 endfunction
 
