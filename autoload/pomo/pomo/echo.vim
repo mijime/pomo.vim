@@ -40,7 +40,7 @@ function! s:view_task(task, stat) abort
     let progress = diff*100/a:task.limit " %
     let lv = a:task.limit/60/5 " Task level
     return a:stat.'('.progress.'%): [Lv'.lv.'] '.a:task.message.' '.
-                \ '('.pomo#common#sec2hr_time(diff).')'
+                \ '('.pomo#common#sec2hrtime(diff).')'
 endfunction
 
 let &cpo = s:save_cpo

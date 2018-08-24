@@ -12,18 +12,22 @@ let s:V = vital#pomo#new()
 let s:TL = s:V.import('Text.LTSV')
 let s:timer = 0
 
-function! pomo#todo#file#use(path) abort
-    let g:pomo__todo__file__path = a:path
+function! pomo#todo#file#use(...) abort
+    if a:0 > 0
+        let g:pomo__todo__file__path = a:1
+    endif
     if filereadable(expand(g:pomo__todo__file__path))
         let tasks = s:TL.parse_file(expand(g:pomo__todo__file__path))
     else
         let tasks = []
     endif
     call pomo#todo#mem#set_tasks(tasks)
+    echo 'Load: '.expand(g:pomo__todo__file__path).strftime(' <%Y-%m-%d %H:%M>')
 
     call pomo#todo#set_view_handler('pomo#todo#file#view')
     call pomo#todo#set_add_handler('pomo#todo#file#add')
     call pomo#todo#set_done_handler('pomo#todo#file#done')
+    call pomo#todo#set_pause_handler('pomo#todo#file#pause')
     call pomo#todo#set_toggle_handler('pomo#todo#file#toggle')
     call pomo#todo#set_remove_handler('pomo#todo#file#remove')
     call pomo#todo#set_update_handler('pomo#todo#file#update')
@@ -45,6 +49,12 @@ function! pomo#todo#file#done(...) abort
     call s:debounce(function('s:write_file'))
 endfunction
 
+function! pomo#todo#file#pause(...) abort
+    call call('pomo#todo#mem#pause', a:000)
+
+    call s:debounce(function('s:write_file'))
+endfunction
+
 function! pomo#todo#file#toggle(...) abort
     call call('pomo#todo#mem#toggle', a:000)
 
@@ -57,7 +67,7 @@ function! pomo#todo#file#remove(...) abort
     call s:debounce(function('s:write_file'))
 endfunction
 
-function! pomo#todo#file#update(idx, ...) abort
+function! pomo#todo#file#update(...) abort
     call call('pomo#todo#mem#update', a:000)
 
     call s:debounce(function('s:write_file'))
@@ -71,7 +81,7 @@ endfunction
 function! s:write_file(timer) abort
     let tasks = pomo#todo#mem#get_tasks()
     call s:TL.dump_file(tasks, expand(g:pomo__todo__file__path))
-    echo strftime('Saved(%Y-%m-%d %H:%M): ').expand(g:pomo__todo__file__path)
+    echo 'Save: '.expand(g:pomo__todo__file__path).strftime(' <%Y-%m-%d %H:%M>')
     call timer_stop(a:timer)
 endfunction
 

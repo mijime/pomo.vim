@@ -12,6 +12,7 @@ function! pomo#todo#mem#use() abort
     call pomo#todo#set_view_handler('pomo#todo#mem#view')
     call pomo#todo#set_add_handler('pomo#todo#mem#add')
     call pomo#todo#set_done_handler('pomo#todo#mem#done')
+    call pomo#todo#set_pause_handler('pomo#todo#mem#pause')
     call pomo#todo#set_toggle_handler('pomo#todo#mem#toggle')
     call pomo#todo#set_remove_handler('pomo#todo#mem#remove')
     call pomo#todo#set_update_handler('pomo#todo#mem#update')
@@ -23,7 +24,11 @@ let s:VB = s:V.import('Vim.Buffer')
 let s:bm = s:VBM.new()
 
 function! pomo#todo#mem#view() abort
-    let buf = []
+    let buf = ['# Usage TodoView '.strftime('<%Y-%m-%d %H:%M>'),
+                \ '# Status: [ ] ... Progress, [X] ... Done, [-] ... Pause',
+                \ '# Shortcut: a ... add task, d ... delete task, t ... toggle status,'.
+                \ ' s ... pause task, r ... reload view, q ... quit view',
+                \ '']
     let idx = 0
     while idx < len(s:pomo__todo__mem__tasks)
         let task = s:pomo__todo__mem__tasks[idx]
@@ -34,16 +39,20 @@ function! pomo#todo#mem#view() abort
     " Create buffer
     call s:bm.open('TodoList', {'opener':'split'})
     call s:VB.edit_content(buf)
-    resize 10
+
+    setlocal nowrap
     setlocal readonly
     setlocal buftype=nowrite
+    nnoremap <buffer> r :call pomo#todo#view()<CR>
     nnoremap <buffer> t :call pomo#todo#toggle(matchstr(getline('.'), '^[0-9]\+'))<CR>
                 \:call pomo#todo#view()<CR>
-    nnoremap <buffer> r :call pomo#todo#view()<CR>
+    nnoremap <buffer> s :call pomo#todo#pause(matchstr(getline('.'), '^[0-9]\+'))<CR>
+                \:call pomo#todo#view()<CR>
     nnoremap <buffer> d :call pomo#todo#remove(matchstr(getline('.'), '^[0-9]\+'))<CR>
                 \:call pomo#todo#view()<CR>
     nnoremap <buffer> a :TodoAdd<SPACE>
-    nnoremap <buffer> q :quit<CR>
+    nnoremap <buffer> u :TodoUpdate<SPACE><C-r>=matchstr(getline('.'), '^[0-9]\+')<CR><SPACE>
+    nnoremap <buffer> q :bdelete %<CR>
 endfunction
 
 function! pomo#todo#mem#add(...) abort
@@ -54,13 +63,19 @@ function! pomo#todo#mem#add(...) abort
         let task = s:pomo__todo__mem__tasks[idx]
         let is_match = (s:is_number(taskname) && idx == taskname) || task.name == taskname
         if is_match
-            echo 'Duplicate: '.s:view_task(task)
+            call s:todo_resume(idx, task)
             return
         endif
         let idx = idx + 1
     endwhile
 
-    let new_task = {'name':taskname,'status':0,'created_at':localtime(),'updated_at':localtime()}
+    let new_task = {
+                \ 'name':taskname,
+                \ 'status':0,
+                \ 'exec_time':0,
+                \ 'created_at':localtime(),
+                \ 'updated_at':localtime()
+                \ }
     call add(s:pomo__todo__mem__tasks, new_task)
     echo 'Add: '.s:view_task(new_task)
 endfunction
@@ -68,6 +83,11 @@ endfunction
 function! pomo#todo#mem#done(...) abort
     let taskname = join(a:000, ' ')
     call s:todo_search(taskname, function('s:todo_done'))
+endfunction
+
+function! pomo#todo#mem#pause(...) abort
+    let taskname = join(a:000, ' ')
+    call s:todo_search(taskname, function('s:todo_pause'))
 endfunction
 
 function! pomo#todo#mem#toggle(...) abort
@@ -80,9 +100,10 @@ function! pomo#todo#mem#remove(...) abort
     call s:todo_search(taskname, function('s:todo_remove'))
 endfunction
 
-function! pomo#todo#mem#update(idx, ...) abort
-    let taskname = join(a:000, ' ')
-    call s:todo_search(a:idx, {idx, task -> execute('let task.name="'.taskname.'"')})
+function! pomo#todo#mem#update(...) abort
+    let idx = a:1
+    let taskname = join(a:000[1:], ' ')
+    call s:todo_search(idx, {idx, task -> execute('let task.name="'.taskname.'"')})
 endfunction
 
 function! pomo#todo#mem#get_tasks() abort
@@ -94,15 +115,36 @@ function! pomo#todo#mem#set_tasks(tasks) abort
 endfunction
 
 function! s:todo_done(idx, task) abort
+    let now = localtime()
+    let a:task.exec_time = a:task.exec_time+(a:task.status == 0 ? now-a:task.updated_at : 0)
+    let a:task.updated_at = now
     let a:task.status = 1
-    let a:task.updated_at = localtime()
     echo 'Done: '.s:view_task(a:task)
 endfunction
 
+function! s:todo_pause(idx, task) abort
+    let now = localtime()
+    let a:task.exec_time = a:task.exec_time+(a:task.status == 0 ? now-a:task.updated_at : 0)
+    let a:task.updated_at = now
+    let a:task.status = 2
+    echo 'Pause: '.s:view_task(a:task)
+endfunction
+
+function! s:todo_resume(idx, task) abort
+    let now = localtime()
+    let a:task.exec_time = a:task.exec_time+(a:task.status == 0 ? now-a:task.updated_at : 0)
+    let a:task.updated_at = now
+    let a:task.status = 0
+    echo 'Resume: '.s:view_task(a:task)
+endfunction
+
 function! s:todo_toggle(idx, task) abort
-    let a:task.status = a:task.status == 1 ? 0 : 1
-    let a:task.updated_at = localtime()
-    echo 'Toggle: '.s:view_task(a:task)
+    if a:task.status == 0
+        call s:todo_done(a:idx, a:task)
+        return
+    endif
+
+    call s:todo_resume(a:idx, a:task)
 endfunction
 
 function! s:todo_remove(idx, task) abort
@@ -130,16 +172,25 @@ function! s:is_number(curr) abort
 endfunction
 
 function! s:view_task_status(status) abort
-    return (a:status == 1 ? '[X]' : '[ ]')
+    if a:status == 1
+        return '[X]'
+    endif
+
+    if a:status == 2
+        return '[-]'
+    endif
+
+    return '[ ]'
 endfunction
 
 function! s:view_task(task) abort
-    let diff = a:task.status == 1 ?
-                \ (a:task.updated_at-a:task.created_at) :
-                \ (localtime()-a:task.created_at)
+    let now = localtime()
+    let diff = a:task.status != 0
+                \ ? a:task.exec_time
+                \ : now-a:task.updated_at+a:task.exec_time
     let lv = diff/60/5
     return '[Lv'.lv.'] '.a:task.name.' '.
-                \ '('.pomo#common#sec2hr_time(diff).') '.
+                \ '('.pomo#common#sec2hrtime(diff).') '.
                 \ strftime('<%Y-%m-%d %H:%M>', a:task.created_at)
 endfunction
 

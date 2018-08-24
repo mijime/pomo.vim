@@ -6,6 +6,8 @@ let g:loaded_pomo__pomo = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
+let g:pomo__pomo__duration = 20
+
 let s:pomo__pomo__handlers = {
             \ 'init_handler': 'pomo#pomo#echo#init',
             \ 'done_handler': 'pomo#pomo#echo#done',
@@ -75,7 +77,7 @@ function! s:pomo__pomo__task.start(limit, message) abort
     let self.message = a:message
     let self.created_at = localtime()
 
-    let duration = 1000*self.limit/100
+    let duration = 1000*self.limit/g:pomo__pomo__duration
     let self.id = timer_start(duration, function('pomo#pomo#progress'), {'repeat':-1})
 endfunction
 

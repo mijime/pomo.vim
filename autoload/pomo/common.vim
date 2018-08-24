@@ -3,10 +3,10 @@ scriptencoding utf-8
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! pomo#common#sec2hr_time(sec) abort
-    if a:sec < 60 | return a:sec . 's' | end
-    if a:sec < 60*60 | return (a:sec/60) . 'm' | end
-    if a:sec < 60*60*24 | return (a:sec/60/60) . 'h' | end
+function! pomo#common#sec2hrtime(sec) abort
+    if a:sec < 60 | return a:sec . 's' | endif
+    if a:sec < 60*60 | return (a:sec/60) . 'm' | endif
+    if a:sec < 60*60*24 | return (a:sec/60/60) . 'h' | endif
     return (a:sec/60/60/24) . 'd'
 endfunction
 
