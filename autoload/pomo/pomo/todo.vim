@@ -21,7 +21,7 @@ function! pomo#pomo#todo#done(task) abort
 endfunction
 
 function! pomo#pomo#todo#cancel(task) abort
-    call pomo#todo#pause(a:task.message)
+    call pomo#todo#suspend(a:task.message)
 endfunction
 
 let &cpo = s:save_cpo

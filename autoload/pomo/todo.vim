@@ -10,7 +10,7 @@ let s:pomo__todo__handlers = {
             \ 'view_handler': 'pomo#todo#mem#view',
             \ 'add_handler': 'pomo#todo#mem#add',
             \ 'done_handler': 'pomo#todo#mem#done',
-            \ 'pause_handler': 'pomo#todo#mem#pause',
+            \ 'suspend_handler': 'pomo#todo#mem#suspend',
             \ 'toggle_handler': 'pomo#todo#mem#toggle',
             \ 'remove_handler': 'pomo#todo#mem#remove',
             \ 'update_handler': 'pomo#todo#mem#update',
@@ -40,12 +40,12 @@ function! pomo#todo#set_done_handler(handler) abort
     let s:pomo__todo__handlers.done_handler = a:handler
 endfunction
 
-function! pomo#todo#pause(...) abort
-    call call(s:pomo__todo__handlers.pause_handler, a:000)
+function! pomo#todo#suspend(...) abort
+    call call(s:pomo__todo__handlers.suspend_handler, a:000)
 endfunction
 
-function! pomo#todo#set_pause_handler(handler) abort
-    let s:pomo__todo__handlers.pause_handler = a:handler
+function! pomo#todo#set_suspend_handler(handler) abort
+    let s:pomo__todo__handlers.suspend_handler = a:handler
 endfunction
 
 function! pomo#todo#toggle(...) abort

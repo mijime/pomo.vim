@@ -27,7 +27,7 @@ function! pomo#todo#file#use(...) abort
     call pomo#todo#set_view_handler('pomo#todo#file#view')
     call pomo#todo#set_add_handler('pomo#todo#file#add')
     call pomo#todo#set_done_handler('pomo#todo#file#done')
-    call pomo#todo#set_pause_handler('pomo#todo#file#pause')
+    call pomo#todo#set_suspend_handler('pomo#todo#file#suspend')
     call pomo#todo#set_toggle_handler('pomo#todo#file#toggle')
     call pomo#todo#set_remove_handler('pomo#todo#file#remove')
     call pomo#todo#set_update_handler('pomo#todo#file#update')
@@ -49,8 +49,8 @@ function! pomo#todo#file#done(...) abort
     call s:debounce(function('s:write_file'))
 endfunction
 
-function! pomo#todo#file#pause(...) abort
-    call call('pomo#todo#mem#pause', a:000)
+function! pomo#todo#file#suspend(...) abort
+    call call('pomo#todo#mem#suspend', a:000)
 
     call s:debounce(function('s:write_file'))
 endfunction

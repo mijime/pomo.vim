@@ -11,6 +11,7 @@ let g:pomo__pomo__duration = 20
 let s:pomo__pomo__handlers = {
             \ 'init_handler': 'pomo#pomo#echo#init',
             \ 'done_handler': 'pomo#pomo#echo#done',
+            \ 'over_handler': 'pomo#pomo#echo#over',
             \ 'progress_handler': 'pomo#pomo#echo#progress',
             \ 'cancel_handler': 'pomo#pomo#echo#cancel',
             \ }
@@ -49,7 +50,12 @@ endfunction
 function! pomo#pomo#progress(...) abort
     if s:pomo__pomo__task.id == 0 | return | endif
     try
-        call call(s:pomo__pomo__handlers.progress_handler, [s:pomo__pomo__task] + a:000)
+        let diff = localtime()-s:pomo__pomo__task.created_at
+        if diff > s:pomo__pomo__task.limit
+            call call(s:pomo__pomo__handlers.over_handler, [s:pomo__pomo__task] + a:000)
+        else
+            call call(s:pomo__pomo__handlers.progress_handler, [s:pomo__pomo__task] + a:000)
+        endif
     catch
         echo 'error occurred: '.v:exception
     endtry
@@ -65,6 +71,10 @@ endfunction
 
 function! pomo#pomo#set_progress_handler(handler) abort
     let s:pomo__pomo__handlers.progress_handler = a:handler
+endfunction
+
+function! pomo#pomo#set_over_handler(handler) abort
+    let s:pomo__pomo__handlers.over_handler = a:handler
 endfunction
 
 function! pomo#pomo#set_cancel_handler(handler) abort

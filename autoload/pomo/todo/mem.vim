@@ -12,7 +12,7 @@ function! pomo#todo#mem#use() abort
     call pomo#todo#set_view_handler('pomo#todo#mem#view')
     call pomo#todo#set_add_handler('pomo#todo#mem#add')
     call pomo#todo#set_done_handler('pomo#todo#mem#done')
-    call pomo#todo#set_pause_handler('pomo#todo#mem#pause')
+    call pomo#todo#set_suspend_handler('pomo#todo#mem#suspend')
     call pomo#todo#set_toggle_handler('pomo#todo#mem#toggle')
     call pomo#todo#set_remove_handler('pomo#todo#mem#remove')
     call pomo#todo#set_update_handler('pomo#todo#mem#update')
@@ -25,9 +25,9 @@ let s:bm = s:VBM.new()
 
 function! pomo#todo#mem#view() abort
     let buf = ['# Usage TodoView '.strftime('<%Y-%m-%d %H:%M>'),
-                \ '# Status: [ ] ... Progress, [X] ... Done, [-] ... Pause',
+                \ '# Status: [ ] ... Progress, [X] ... Done, [-] ... Suspend',
                 \ '# Shortcut: a ... add task, d ... delete task, t ... toggle status,'.
-                \ ' s ... pause task, r ... reload view, q ... quit view',
+                \ ' s ... suspend task, r ... reload view, q ... quit view',
                 \ '']
     let idx = 0
     while idx < len(s:pomo__todo__mem__tasks)
@@ -46,7 +46,7 @@ function! pomo#todo#mem#view() abort
     nnoremap <buffer> r :call pomo#todo#view()<CR>
     nnoremap <buffer> t :call pomo#todo#toggle(matchstr(getline('.'), '^[0-9]\+'))<CR>
                 \:call pomo#todo#view()<CR>
-    nnoremap <buffer> s :call pomo#todo#pause(matchstr(getline('.'), '^[0-9]\+'))<CR>
+    nnoremap <buffer> s :call pomo#todo#suspend(matchstr(getline('.'), '^[0-9]\+'))<CR>
                 \:call pomo#todo#view()<CR>
     nnoremap <buffer> d :call pomo#todo#remove(matchstr(getline('.'), '^[0-9]\+'))<CR>
                 \:call pomo#todo#view()<CR>
@@ -85,9 +85,9 @@ function! pomo#todo#mem#done(...) abort
     call s:todo_search(taskname, function('s:todo_done'))
 endfunction
 
-function! pomo#todo#mem#pause(...) abort
+function! pomo#todo#mem#suspend(...) abort
     let taskname = join(a:000, ' ')
-    call s:todo_search(taskname, function('s:todo_pause'))
+    call s:todo_search(taskname, function('s:todo_suspend'))
 endfunction
 
 function! pomo#todo#mem#toggle(...) abort
@@ -122,12 +122,12 @@ function! s:todo_done(idx, task) abort
     echo 'Done: '.s:view_task(a:task)
 endfunction
 
-function! s:todo_pause(idx, task) abort
+function! s:todo_suspend(idx, task) abort
     let now = localtime()
     let a:task.exec_time = a:task.exec_time+(a:task.status == 0 ? now-a:task.updated_at : 0)
     let a:task.updated_at = now
     let a:task.status = 2
-    echo 'Pause: '.s:view_task(a:task)
+    echo 'Suspend: '.s:view_task(a:task)
 endfunction
 
 function! s:todo_resume(idx, task) abort
