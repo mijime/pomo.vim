@@ -3,6 +3,9 @@ pomo.vim
 
 `pomo.vim` supports your [pomodoro technique](https://en.wikipedia.org/wiki/Pomodoro_Technique).
 
+![logo](logo.png)
+
+
 ## Installation
 
 use [vim-plug](https://github.com/junegunn/vim-plug)
@@ -47,7 +50,7 @@ TodoView
 " # Usage TodoView <2018-08-28 10:59>
 " # Status: [ ] ... Progress, [X] ... Done, [-] ... Pause
 " # Shortcut: a ... add task, d ... delete task, t ... toggle status, s ... suspend task, r ... reload view, q ... quit view
-" 
+"
 " 0: [ ] [Lv2] Remember the milk (12m) <2018-08-28 10:47>
 
 " TodoDone <task>
@@ -82,7 +85,7 @@ TodoView
 " # Usage TodoView <2018-08-28 10:51>
 " # Status: [ ] ... Progress, [X] ... Done, [-] ... Pause
 " # Shortcut: a ... add task, d ... delete task, t ... toggle status, s ... suspend task, r ... reload view, q ... quit view
-" 
+"
 " 0: [ ] [Lv0] Remember the milk (18s) <2018-08-28 10:50>
 
 PomoDone
@@ -93,7 +96,7 @@ TodoView
 " # Usage TodoView <2018-08-28 10:53>
 " # Status: [ ] ... Progress, [X] ... Done, [-] ... Pause
 " # Shortcut: a ... add task, d ... delete task, t ... toggle status, s ... suspend task, r ... reload view, q ... quit view
-" 
+"
 " 0: [X] [Lv0] Remember the milk (2m) <2018-08-28 10:50>
 ```
 
