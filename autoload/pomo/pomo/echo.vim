@@ -6,6 +6,11 @@ let g:loaded_pomo__pomo__echo = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:V = vital#pomo#new()
+let s:VBM = s:V.import('Vim.BufferManager')
+let s:VB = s:V.import('Vim.Buffer')
+let s:bm = s:VBM.new()
+
 function! pomo#pomo#echo#use() abort
     call pomo#pomo#set_init_handler('pomo#pomo#echo#init')
     call pomo#pomo#set_done_handler('pomo#pomo#echo#done')
@@ -27,7 +32,18 @@ function! pomo#pomo#echo#cancel(task) abort
 endfunction
 
 function! pomo#pomo#echo#over(task, ...) abort
-    echo s:view_task(a:task, 'Over')
+    call s:bm.open('Pomodoro', {'opener':'4split'})
+    call s:VB.edit_content(['# Time is up '.strftime('<%Y-%m-%d %H:%M>'),
+                \ '# Shortcut: d ... done, c ... cancel, q ... quit',
+                \ '',
+                \ s:view_task(a:task, 'Over')])
+
+    setlocal nowrap
+    setlocal readonly
+    setlocal buftype=nowrite
+    nnoremap <buffer> c :bdelete %<CR>:PomoCancel<CR>
+    nnoremap <buffer> d :bdelete %<CR>:PomoDone<CR>
+    nnoremap <buffer> q :bdelete %<CR>
 endfunction
 
 function! pomo#pomo#echo#progress(task, ...) abort

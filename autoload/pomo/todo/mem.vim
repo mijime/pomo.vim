@@ -24,7 +24,7 @@ let s:VB = s:V.import('Vim.Buffer')
 let s:bm = s:VBM.new()
 
 function! pomo#todo#mem#view() abort
-    let buf = ['# Usage TodoView '.strftime('<%Y-%m-%d %H:%M>'),
+    let buf = ['# TodoList '.strftime('<%Y-%m-%d %H:%M>'),
                 \ '# Status: [ ] ... Progress, [X] ... Done, [-] ... Suspend',
                 \ '# Shortcut: a ... add task, d ... delete task, t ... toggle status,'.
                 \ ' s ... suspend task, r ... reload view, q ... quit view',
@@ -37,7 +37,7 @@ function! pomo#todo#mem#view() abort
     endwhile
 
     " Create buffer
-    call s:bm.open('TodoList', {'opener':'split'})
+    call s:bm.open('TodoList', {'opener':'10split'})
     call s:VB.edit_content(buf)
 
     setlocal nowrap
