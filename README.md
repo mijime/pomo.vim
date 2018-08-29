@@ -47,7 +47,7 @@ TodoAdd Remember the milk
 " TodoView
 TodoView
 
-" # Usage TodoView <2018-08-28 10:59>
+" # TodoList <2018-08-28 10:59>
 " # Status: [ ] ... Progress, [X] ... Done, [-] ... Pause
 " # Shortcut: a ... add task, d ... delete task, t ... toggle status, s ... suspend task, r ... reload view, q ... quit view
 "
@@ -82,7 +82,7 @@ PomoStart 10 Remember the milk
 " You can confirm to sync todo list.
 TodoView
 
-" # Usage TodoView <2018-08-28 10:51>
+" # TodoList <2018-08-28 10:51>
 " # Status: [ ] ... Progress, [X] ... Done, [-] ... Pause
 " # Shortcut: a ... add task, d ... delete task, t ... toggle status, s ... suspend task, r ... reload view, q ... quit view
 "
@@ -93,7 +93,7 @@ PomoDone
 " You can confirm to sync task status.
 TodoView
 
-" # Usage TodoView <2018-08-28 10:53>
+" # TodoList <2018-08-28 10:53>
 " # Status: [ ] ... Progress, [X] ... Done, [-] ... Pause
 " # Shortcut: a ... add task, d ... delete task, t ... toggle status, s ... suspend task, r ... reload view, q ... quit view
 "
